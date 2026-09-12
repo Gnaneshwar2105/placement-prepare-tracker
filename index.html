@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Placement Prep — Build Log</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap');
+
+  :root{
+    --bg: #12181a;
+    --panel: #1a2225;
+    --panel-2: #202b2f;
+    --line: #2c383c;
+    --ink: #e7e9e4;
+    --ink-dim: #9aa6a5;
+    --amber: #d99a44;
+    --amber-dim: #8a6a3d;
+    --brew: #57b894;
+    --brew-dim: #2f4a41;
+    --danger: #c96a4e;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap{
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 28px 20px 80px;
+  }
+
+  /* ---------- Header ---------- */
+  header{
+    display:flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    align-items: flex-end;
+    justify-content: space-between;
+    padding-bottom: 18px;
+    margin-bottom: 16px;
+  }
+  .title-block h1{
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 30px;
+    margin: 0 0 6px;
+    letter-spacing: 0.2px;
+  }
+  .title-block p{
+    margin:0;
+    color: var(--ink-dim);
+    font-size: 14px;
+    max-width: 480px;
+    line-height: 1.5;
+  }
+  .stat{
+    text-align:right;
+  }
+  .stat .num{
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 34px;
+    font-weight: 600;
+    color: var(--brew);
+    line-height:1;
+  }
+  .stat .lbl{
+    font-size: 12px;
+    color: var(--ink-dim);
+    margin-top: 4px;
+  }
+
+  /* ---------- Track tabs ---------- */
+  .tabs{
+    display:flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 18px;
+    margin-bottom: 22px;
+  }
+  .tab{
+    background: var(--panel);
+    border: 1px solid var(--line);
+    color: var(--ink-dim);
+    border-radius: 4px;
+    padding: 10px 16px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13.5px;
+    font-weight: 500;
+    cursor: pointer;
+    display:flex;
+    align-items:center;
+    gap: 9px;
+    transition: all .15s ease;
+  }
+  .tab:hover{ border-color: var(--amber-dim); color: var(--ink); }
+  .tab.active{
+    background: var(--panel-2);
+    border-color: var(--amber);
+    color: var(--ink);
+  }
+  .tab .tab-pct{
+    font-family:'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--brew);
+    background: var(--bg);
+    padding: 2px 6px;
+    border-radius: 3px;
+  }
+  .tab-divider{
+    display:flex;
+    align-items:center;
+    color: var(--ink-dim);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.03em;
+    padding: 0 2px;
+  }
+
+  /* ---------- Layout ---------- */
+  .layout{
+    display:grid;
+    grid-template-columns: 230px 1fr;
+    gap: 26px;
+  }
+  @media (max-width: 780px){
+    .layout{ grid-template-columns: 1fr; }
+  }
+
+  /* ---------- Stack nav (phases/months) ---------- */
+  .stack-nav{
+    display:flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .stack-item{
+    position: relative;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 14px 14px 12px;
+    cursor: pointer;
+    transition: border-color .15s ease, background .15s ease;
+  }
+  .stack-item:hover{ border-color: var(--amber-dim); }
+  .stack-item.active{
+    background: var(--panel-2);
+    border-color: var(--amber);
+  }
+  .stack-item .m-name{
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-dim);
+    letter-spacing: 0.03em;
+  }
+  .stack-item .m-title{
+    font-size: 14px;
+    font-weight: 600;
+    margin-top: 3px;
+    line-height: 1.3;
+  }
+  .fill-track{
+    margin-top: 10px;
+    height: 5px;
+    background: var(--bg);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .fill-bar{
+    height: 100%;
+    background: linear-gradient(90deg, var(--amber-dim), var(--brew));
+    width: 0%;
+    transition: width .3s ease;
+  }
+  .stack-item .m-pct{
+    font-family:'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-dim);
+    margin-top: 6px;
+    display:block;
+  }
+
+  .extras-btn{
+    margin-top: 6px;
+    background: none;
+    border: 1px dashed var(--line);
+    color: var(--ink-dim);
+    border-radius: 3px;
+    padding: 12px 14px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    text-align:left;
+    cursor:pointer;
+  }
+  .extras-btn:hover{ border-color: var(--amber-dim); color: var(--ink); }
+  .extras-btn.active{ border-style: solid; border-color: var(--amber); color: var(--ink); }
+
+  /* ---------- Main panel ---------- */
+  .panel{
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 22px 24px 26px;
+    min-height: 400px;
+  }
+  .panel-head{
+    display:flex;
+    justify-content: space-between;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+  .panel-head h2{
+    font-family: 'Fraunces', serif;
+    font-size: 21px;
+    font-weight: 600;
+    margin: 0;
+  }
+  .panel-head .sub{
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--ink-dim);
+    text-align: right;
+  }
+
+  /* ---------- Week/section block ---------- */
+  .week{
+    border-top: 1px solid var(--line);
+    padding: 16px 0;
+  }
+  .week:first-of-type{ border-top: none; padding-top: 4px; }
+  .week-head{
+    display:flex;
+    align-items:center;
+    justify-content: space-between;
+    cursor:pointer;
+    user-select:none;
+  }
+  .week-head-left{
+    display:flex;
+    align-items:center;
+    gap: 10px;
+  }
+  .week-caret{
+    font-family:'JetBrains Mono', monospace;
+    color: var(--amber);
+    font-size: 12px;
+    width: 12px;
+    display:inline-block;
+    transition: transform .15s ease;
+  }
+  .week.collapsed .week-caret{ transform: rotate(-90deg); }
+  .week-title{
+    font-size: 15px;
+    font-weight: 600;
+  }
+  .week-count{
+    font-family:'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--ink-dim);
+  }
+  .week-bar-track{
+    height: 3px;
+    background: var(--bg);
+    border-radius: 2px;
+    margin-top: 10px;
+    overflow: hidden;
+  }
+  .week-bar{
+    height:100%;
+    background: var(--brew);
+    width:0%;
+    transition: width .25s ease;
+  }
+  .days{
+    margin-top: 14px;
+    display:flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .week.collapsed .days, .week.collapsed .week-bar-track{ display:none; }
+
+  .day{
+    background: var(--panel-2);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 10px 14px;
+  }
+  .day-label{
+    font-family:'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--amber);
+    margin-bottom: 8px;
+    letter-spacing: 0.03em;
+  }
+  .topic{
+    display:flex;
+    align-items:flex-start;
+    gap: 10px;
+    padding: 6px 0;
+    cursor:pointer;
+  }
+  .topic + .topic{ border-top: 1px dashed var(--line); }
+  .topic input{ display:none; }
+  .box{
+    flex: 0 0 16px;
+    width:16px; height:16px;
+    border: 1.5px solid var(--ink-dim);
+    border-radius: 3px;
+    margin-top: 2px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    transition: all .12s ease;
+  }
+  .topic input:checked + .box{
+    background: var(--brew);
+    border-color: var(--brew);
+  }
+  .topic input:checked + .box::after{
+    content:'✓';
+    color: #0d1512;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .topic span.txt{
+    font-size: 13.5px;
+    line-height: 1.4;
+    transition: color .12s ease, opacity .12s ease;
+  }
+  .topic input:checked ~ span.txt{
+    color: var(--ink-dim);
+    text-decoration: line-through;
+    text-decoration-color: var(--brew-dim);
+    opacity: 0.75;
+  }
+
+  .empty-note{
+    color: var(--ink-dim);
+    font-size: 13px;
+    font-style: italic;
+    padding: 10px 0 4px;
+  }
+
+  footer{
+    margin-top: 26px;
+    display:flex;
+    justify-content: space-between;
+    align-items:center;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .reset-btn{
+    background:none;
+    border: 1px solid var(--line);
+    color: var(--ink-dim);
+    font-family:'Inter', sans-serif;
+    font-size: 12px;
+    padding: 8px 12px;
+    border-radius: 3px;
+    cursor:pointer;
+  }
+  .reset-btn:hover{ border-color: var(--danger); color: var(--danger); }
+  .save-state{
+    font-family:'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-dim);
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="title-block">
+      <h1>Placement Prep — Build Log</h1>
+      <p>Full stack roadmap and DSA patterns roll up into one dev progress score. Aptitude (test-taking skills) and Placement (the hiring process) are each tracked as their own separate section.</p>
+    </div>
+    <div class="stat">
+      <div class="num" id="overallPct">0%</div>
+      <div class="lbl" id="overallCount">0 / 0 across dev + DSA</div>
+    </div>
+  </header>
+
+  <div class="tabs" id="tabBar"></div>
+
+  <div class="layout">
+    <nav class="stack-nav" id="stackNav"></nav>
+
+    <div class="panel">
+      <div class="panel-head">
+        <h2 id="panelTitle">—</h2>
+        <span class="sub" id="panelSub"></span>
+      </div>
+      <div id="weeksHost"></div>
+    </div>
+  </div>
+
+  <footer>
+    <span class="save-state" id="saveState">loading…</span>
+    <button class="reset-btn" id="resetBtn">Clear all progress</button>
+  </footer>
+</div>
+
+<script>
+/* ==================================================================
+   TRACK 1 — Full Stack Java roadmap
+   ================================================================== */
+const FULLSTACK = [
+  { id:'m1', tag:'PHASE 1', title:'Java & Backend Foundations', range:'Weeks 1–5', weeks:[
+    { id:'w1', title:'Week 1 · Core Java — Syntax', days:[
+      { id:'d0', label:'Day 0 · Setup', topics:['Install JDK & set up IDE (IntelliJ/Eclipse)','Maven or Gradle basics','Run your first Hello World'] },
+      { id:'d1', label:'Day 1', topics:['Variables & data types','Operators'] },
+      { id:'d2', label:'Day 2', topics:['Input / output','Conditional statements'] },
+      { id:'d3', label:'Day 3', topics:['Loops','Methods'] },
+      { id:'d4', label:'Day 4', topics:['Arrays','Strings'] },
+      { id:'d5', label:'Day 5', topics:['Review + syntax practice drills'] },
+    ]},
+    { id:'w2', title:'Week 2 · Core Java — OOP', days:[
+      { id:'d1', label:'Day 1', topics:['Classes & objects','Constructors'] },
+      { id:'d2', label:'Day 2', topics:['Encapsulation'] },
+      { id:'d3', label:'Day 3', topics:['Inheritance'] },
+      { id:'d4', label:'Day 4', topics:['Polymorphism','Abstraction'] },
+      { id:'d5', label:'Day 5', topics:['Interfaces','Review: small OOP modeling exercise'] },
+    ]},
+    { id:'w3', title:'Week 3 · Exceptions & Collections', days:[
+      { id:'d1', label:'Day 1', topics:['try / catch','finally'] },
+      { id:'d2', label:'Day 2', topics:['throw / throws','Custom exceptions'] },
+      { id:'d3', label:'Day 3', topics:['List → ArrayList, LinkedList'] },
+      { id:'d4', label:'Day 4', topics:['Set → HashSet','Map → HashMap'] },
+      { id:'d5', label:'Day 5', topics:['Queue & iteration','Comparable / Comparator','Review'] },
+    ]},
+    { id:'w4', title:'Week 4 · Advanced Java — Lambdas, Streams & Threads', days:[
+      { id:'d1', label:'Day 1', topics:['Lambda expressions'] },
+      { id:'d2', label:'Day 2', topics:['Stream API basics'] },
+      { id:'d3', label:'Day 3', topics:['Stream API practice (filter/map/reduce)'] },
+      { id:'d4', label:'Day 4', topics:['Multithreading & concurrency basics'] },
+      { id:'d5', label:'Day 5', topics:['Threading practice + review'] },
+    ]},
+    { id:'w5', title:'Week 5 · Advanced Java — JDBC & MVC', days:[
+      { id:'d1', label:'Day 1', topics:['JDBC & database connectivity'] },
+      { id:'d2', label:'Day 2', topics:['JDBC practice: connect a Java app to a database'] },
+      { id:'d3', label:'Day 3', topics:['Servlets / JSP basics'] },
+      { id:'d4', label:'Day 4', topics:['MVC pattern basics'] },
+      { id:'d5', label:'Day 5', topics:['Phase 1 review + mini console app using JDBC'] },
+    ]},
+  ]},
+  { id:'m2', tag:'PHASE 2', title:'Databases & Web Foundations', range:'Weeks 6–8', weeks:[
+    { id:'w6', title:'Week 6 · Relational Databases I', days:[
+      { id:'d1', label:'Day 1', topics:['Install MySQL / PostgreSQL, basic setup'] },
+      { id:'d2', label:'Day 2', topics:['Tables','Primary & foreign keys'] },
+      { id:'d3', label:'Day 3', topics:['Table relationships (1:1, 1:N, N:N)'] },
+      { id:'d4', label:'Day 4', topics:['CRUD operations'] },
+      { id:'d5', label:'Day 5', topics:['Practice: write CRUD queries end to end'] },
+    ]},
+    { id:'w7', title:'Week 7 · Relational Databases II', days:[
+      { id:'d1', label:'Day 1', topics:['SQL queries: SELECT, WHERE, ORDER BY'] },
+      { id:'d2', label:'Day 2', topics:['Joins (INNER, LEFT, RIGHT)'] },
+      { id:'d3', label:'Day 3', topics:['Aggregations (GROUP BY, COUNT, SUM)'] },
+      { id:'d4', label:'Day 4', topics:['Database design & normalization'] },
+      { id:'d5', label:'Day 5', topics:['Review + design a small schema from scratch'] },
+    ]},
+    { id:'w8', title:'Week 8 · Web Foundations', days:[
+      { id:'d1', label:'Day 1', topics:['HTML5','Semantic HTML'] },
+      { id:'d2', label:'Day 2', topics:['CSS3 basics'] },
+      { id:'d3', label:'Day 3', topics:['Responsive design (Flexbox/Grid)'] },
+      { id:'d4', label:'Day 4', topics:['JavaScript ES6+ fundamentals'] },
+      { id:'d5', label:'Day 5', topics:['DOM, async JS, Fetch API, JSON','Phase 2 review'] },
+    ]},
+  ]},
+  { id:'m3', tag:'PHASE 3', title:'React + Spring Boot', range:'Weeks 9–13', weeks:[
+    { id:'w9', title:'Week 9 · React I', days:[
+      { id:'d1', label:'Day 1', topics:['Component-based architecture','JSX'] },
+      { id:'d2', label:'Day 2', topics:['Props'] },
+      { id:'d3', label:'Day 3', topics:['State & useState'] },
+      { id:'d4', label:'Day 4', topics:['useEffect'] },
+      { id:'d5', label:'Day 5', topics:['Review: build a small stateful component'] },
+    ]},
+    { id:'w10', title:'Week 10 · React II', days:[
+      { id:'d1', label:'Day 1', topics:['Event handling'] },
+      { id:'d2', label:'Day 2', topics:['Forms in React'] },
+      { id:'d3', label:'Day 3', topics:['Form validation'] },
+      { id:'d4', label:'Day 4', topics:['API calls with Axios / Fetch'] },
+      { id:'d5', label:'Day 5', topics:['Mini project: fetch & display data from an API'] },
+    ]},
+    { id:'w11', title:'Week 11 · Spring Boot I', days:[
+      { id:'d1', label:'Day 1', topics:['Spring fundamentals: DI & IoC'] },
+      { id:'d2', label:'Day 2', topics:['Spring Boot basics & auto-configuration'] },
+      { id:'d3', label:'Day 3', topics:['REST APIs concept + your first GET endpoint'] },
+      { id:'d4', label:'Day 4', topics:['POST, PUT, DELETE endpoints'] },
+      { id:'d5', label:'Day 5', topics:['Controllers vs. Services layering','Review'] },
+    ]},
+    { id:'w12', title:'Week 12 · Spring Boot II', days:[
+      { id:'d1', label:'Day 1', topics:['Repositories & Spring Data JPA intro'] },
+      { id:'d2', label:'Day 2', topics:['Hibernate & ORM concepts'] },
+      { id:'d3', label:'Day 3', topics:['MySQL + Spring Boot integration'] },
+      { id:'d4', label:'Day 4', topics:['Build a full CRUD REST API'] },
+      { id:'d5', label:'Day 5', topics:['Test the API with Postman','Review'] },
+    ]},
+    { id:'w13', title:'Week 13 · Spring Boot III — Hardening', days:[
+      { id:'d1', label:'Day 1', topics:['Request validation (bean validation)'] },
+      { id:'d2', label:'Day 2', topics:['Global exception handling'] },
+      { id:'d3', label:'Day 3', topics:['Logging basics'] },
+      { id:'d4', label:'Day 4', topics:['Environment variables & configuration'] },
+      { id:'d5', label:'Day 5', topics:['Testing basics (JUnit)','Polish the backend project'] },
+    ]},
+  ]},
+  { id:'m4', tag:'PHASE 4', title:'Integration & DevOps', range:'Weeks 14–16+', weeks:[
+    { id:'w14', title:'Week 14 · System Integration', days:[
+      { id:'d1', label:'Day 1', topics:['Connect React → Spring Boot','CORS'] },
+      { id:'d2', label:'Day 2', topics:['JSON data exchange','API requests/responses'] },
+      { id:'d3', label:'Day 3', topics:['Error handling across the full stack'] },
+      { id:'d4', label:'Day 4', topics:['Frontend–backend data flow, hands-on'] },
+      { id:'d5', label:'Day 5', topics:['Debug a broken integration end to end'] },
+    ]},
+    { id:'w15', title:'Week 15 · Tools, Git & API Craft', days:[
+      { id:'d1', label:'Day 1', topics:['Git basics & commits'] },
+      { id:'d2', label:'Day 2', topics:['GitHub, branches, pull/push'] },
+      { id:'d3', label:'Day 3', topics:['Postman, deep dive'] },
+      { id:'d4', label:'Day 4', topics:['Swagger / OpenAPI'] },
+      { id:'d5', label:'Day 5', topics:['HTTP fundamentals, REST principles, status codes'] },
+    ]},
+    { id:'w16', title:'Week 16+ · DevOps, Security & Capstone', days:[
+      { id:'d1', label:'Day 1', topics:['Docker containerization'] },
+      { id:'d2', label:'Day 2', topics:['AWS EC2 basics'] },
+      { id:'d3', label:'Day 3', topics:['AWS S3 basics'] },
+      { id:'d4', label:'Day 4', topics:['CI/CD pipelines, intro'] },
+      { id:'d5', label:'Day 5', topics:['Authentication & authorization','Spring Security + JWT'] },
+      { id:'d6', label:'Day 6', topics:['Deployment basics for a full-stack app'] },
+      { id:'d7', label:'Day 7+', topics:['Capstone: build and deploy one complete full-stack project'] },
+    ]},
+  ]},
+];
+
+const FULLSTACK_EXTRAS = {
+  title:'Extra checkpoints worth pinning down',
+  note:'These sit inside the weeks above, but are easy to skim past — use this as a standalone sanity check before you call yourself job-ready.',
+  items:[
+    'Maven / Gradle comfort — not just "it builds"',
+    'HTTP fundamentals (methods, headers, status codes)',
+    'REST API design principles',
+    'Postman workflows (collections, environments)',
+    'Swagger / OpenAPI docs',
+    'Git branching workflow (feature branches, PRs, merge conflicts)',
+    'Request validation',
+    'Global exception handling',
+    'Logging',
+    'Authentication & authorization concepts',
+    'Spring Security + JWT',
+    'Automated testing (JUnit)',
+    'Environment variables / config management',
+    'Deployment',
+    'One substantial full-stack project, shipped',
+  ]
+};
+
+/* ==================================================================
+   TRACK 2 — DSA Pattern roadmap (LeetCode)
+   Each phase = "Concepts to learn" + "Problems to solve"
+   ================================================================== */
+function dsaPhase(id, tag, title, goal, concepts, problems){
+  const weeks = [];
+  if (concepts && concepts.length){
+    weeks.push({ id:'concepts', title:'Concepts to learn', days:[{ id:'d1', label:'Learn', topics: concepts }] });
+  }
+  if (problems && problems.length){
+    weeks.push({ id:'problems', title:`Problems · ${goal}`, days:[{ id:'d1', label:'Practice list', topics: problems }] });
+  }
+  return { id, tag, title, range: goal, weeks };
+}
+
+const DSA = [
+  dsaPhase('p1','PHASE 1','Arrays & Strings — Foundation ✅','Goal: 20–25 problems',
+    ['Array traversal','Max / Min','Reverse array','Frequency counting','Prefix Sum','Difference Array'],
+    []
+  ),
+  dsaPhase('p2','PHASE 2','Two Pointers ⭐⭐⭐','Goal: 20 problems',
+    ['Opposite direction pointers','Same direction pointers','Slow & fast pointers'],
+    ['Two Sum II','Remove Duplicates','Move Zeroes','Valid Palindrome','Reverse String','Squares of Sorted Array','Container With Most Water','3Sum']
+  ),
+  dsaPhase('p3','PHASE 3','Sliding Window ⭐⭐⭐⭐','Goal: 25 problems',
+    ['Fixed-size window','Variable-size window'],
+    ['Maximum Sum Subarray','Maximum Average','Longest Substring Without Repeating Characters','Minimum Size Subarray Sum','Permutation in String','Fruits Into Baskets','Longest Repeating Character Replacement']
+  ),
+  dsaPhase('p4','PHASE 4','Binary Search','Goal: 20 problems',
+    ['Normal binary search','Lower bound','Upper bound','Search on answer'],
+    ['Binary Search','First Bad Version','Search Insert Position','Peak Element','Koko Eating Bananas','Capacity to Ship Packages']
+  ),
+  dsaPhase('p5','PHASE 5','Prefix Sum & Hashing','Goal: 20 problems',
+    ['Prefix Sum','HashMap','HashSet'],
+    ['Subarray Sum Equals K','Continuous Subarray Sum','Two Sum','Contains Duplicate','Longest Consecutive Sequence']
+  ),
+  dsaPhase('p6','PHASE 6','Stack','Goal: 20 problems',
+    ['Monotonic stack','Parentheses matching','Next greater element'],
+    ['Valid Parentheses','Daily Temperatures','Largest Rectangle in Histogram','Next Greater Element']
+  ),
+  dsaPhase('p7','PHASE 7','Queue & Deque','Goal: 15 problems',
+    ['Monotonic queue','Circular queue'],
+    ['Sliding Window Maximum','Implement Queue','Number of Recent Calls']
+  ),
+  dsaPhase('p8','PHASE 8','Linked List','Goal: 20 problems',
+    ['Reverse a list','Detect cycle','Merge lists','Middle node','Fast & slow pointer'],
+    ['Reverse Linked List','Merge Two Lists','Linked List Cycle','Remove Nth Node']
+  ),
+  dsaPhase('p9','PHASE 9','Trees','Goal: 30 problems',
+    ['DFS','BFS','Traversals (in/pre/post-order)'],
+    ['Maximum Depth','Same Tree','Balanced Tree','Diameter','Level Order Traversal']
+  ),
+  dsaPhase('p10','PHASE 10','Heap (Priority Queue)','Goal: 15 problems',
+    ['Min-heap vs. max-heap basics'],
+    ['Kth Largest Element','Top K Frequent Elements','Merge K Sorted Lists','Last Stone Weight']
+  ),
+  dsaPhase('p11','PHASE 11','Backtracking','Goal: 20 problems',
+    ['Choose → explore → un-choose pattern'],
+    ['Permutations','Combinations','N-Queens','Sudoku Solver']
+  ),
+  dsaPhase('p12','PHASE 12','Graphs','Goal: 25 problems',
+    ['DFS','BFS','Union Find','Topological Sort'],
+    ['Number of Islands','Clone Graph','Course Schedule','Redundant Connection']
+  ),
+  dsaPhase('p13','PHASE 13','Dynamic Programming','Goal: 40 problems',
+    ['1D DP','2D DP','Knapsack','LIS'],
+    ['Climbing Stairs','House Robber','Coin Change','Longest Increasing Subsequence']
+  ),
+];
+
+/* ==================================================================
+   TRACK 3 — Aptitude (test-taking skills) — kept separate from the dev total
+   ================================================================== */
+function aptPhase(id, tag, title, goal, concepts, practice){
+  const weeks = [];
+  if (concepts && concepts.length){
+    weeks.push({ id:'concepts', title:'Topics to cover', days:[{ id:'d1', label:'Learn', topics: concepts }] });
+  }
+  if (practice && practice.length){
+    weeks.push({ id:'practice', title:`Practice · ${goal}`, days:[{ id:'d1', label:'Do', topics: practice }] });
+  }
+  return { id, tag, title, range: goal, weeks };
+}
+
+const APTITUDE = [
+  aptPhase('a1','PHASE 1','Quantitative Aptitude — Foundations','Goal: 30–40 problems',
+    ['Number system','HCF & LCM','Percentages','Profit & Loss','Ratio & Proportion','Averages','Simple & Compound Interest','Time & Work','Time, Speed & Distance'],
+    ['Solve 30–40 mixed foundation problems','Time yourself: ~1 minute per question']
+  ),
+  aptPhase('a2','PHASE 2','Quantitative Aptitude — Advanced','Goal: 25 problems',
+    ['Permutation & Combination','Probability','Mixtures & Alligations','Data Interpretation (tables, graphs, pie charts)','Boats & Streams'],
+    ['Solve 25 advanced problems','Attempt one full Data Interpretation set under time pressure']
+  ),
+  aptPhase('a3','PHASE 3','Logical Reasoning','Goal: 30 problems',
+    ['Number & letter series','Blood relations','Coding–decoding','Direction sense','Syllogisms','Seating arrangement','Puzzles','Clocks & calendars'],
+    ['Solve 30 mixed logical reasoning problems','Attempt one full puzzle set under time pressure']
+  ),
+  aptPhase('a4','PHASE 4','Verbal Ability & English','Goal: 25 questions',
+    ['Reading comprehension','Sentence correction','Synonyms & antonyms','Para jumbles','One-word substitution','Verbal analogies'],
+    ['Read and summarize 5 passages','Attempt 25 mixed verbal questions']
+  ),
+];
+
+/* ==================================================================
+   TRACK 4 — Placement Process (interviews, resume, company rounds)
+   Separate from Aptitude: this is about landing the job once your
+   test-taking skills are solid, not about test content itself.
+   ================================================================== */
+const PLACEMENT = [
+  aptPhase('pl1','PHASE 1','Core CS Fundamentals (Interview Rounds)','Goal: interview-ready on each topic',
+    ['OOP concepts, revisited for interviews','DBMS: normalization, keys, transactions','OS: process vs. thread, memory management, deadlock','Computer Networks: OSI/TCP-IP basics, HTTP','Core Java interview questions'],
+    ['Write a one-paragraph answer for each topic in your own words','Do one mock Q&A round per topic with a friend or aloud']
+  ),
+  aptPhase('pl2','PHASE 2','Resume & Profile Building','Goal: one polished, ready-to-send resume',
+    ['ATS-friendly resume format','Quantify project impact (numbers, outcomes)','GitHub profile polish (pinned repos, clear READMEs)','LinkedIn headline & summary'],
+    ['Get your resume reviewed by a peer or mentor','Rewrite three project bullets in STAR format']
+  ),
+  aptPhase('pl3','PHASE 3','Mock Interviews & HR Prep','Goal: comfortable in front of a panel',
+    ['"Tell me about yourself"','Strengths & weaknesses','Behavioral questions (STAR method)','"Why this company / why should we hire you"','Salary expectation basics'],
+    ['Do one full mock HR interview','Practice one group discussion topic']
+  ),
+  aptPhase('pl4','PHASE 4','Company-Specific Prep & Full Mocks','Goal: dry-run the real thing',
+    ['Research the target company\'s hiring process','Solve previous years\' placement papers'],
+    ['Take one full timed aptitude mock test','Take one full mock technical interview','Take one full mock HR round']
+  ),
+];
+
+/* ==================================================================
+   Track registry
+   "dev" tracks (fullstack + dsa) roll up into the header's overall %.
+   "aptitude" is a separate track with its own % — it is never added
+   into the dev total, by design.
+   ================================================================== */
+const TRACKS = {
+  fullstack: { label:'Full Stack Dev', months: FULLSTACK,  extras: FULLSTACK_EXTRAS },
+  dsa:       { label:'DSA Patterns',   months: DSA,        extras: null },
+  aptitude:  { label:'Aptitude',       months: APTITUDE,   extras: null },
+  placement: { label:'Placement',      months: PLACEMENT,  extras: null },
+};
+const DEV_TRACK_ORDER = ['fullstack','dsa'];
+const TRACK_ORDER = ['fullstack','dsa','aptitude','placement'];
+
+/* ---------------- State ---------------- */
+let checked = {};
+let activeTrack = 'fullstack';
+let activeMonthByTrack = { fullstack:'m1', dsa:'p1', aptitude:'a1', placement:'pl1' };
+let showExtras = false;
+let collapsedWeeks = {};
+
+function monthTopicIds(trackId, month){
+  const ids = [];
+  month.weeks.forEach(w => w.days.forEach(d => d.topics.forEach((t,i)=> ids.push(`${trackId}:${month.id}:${w.id}:${d.id}:${i}`))));
+  return ids;
+}
+function weekTopicIds(trackId, month, week){
+  const ids = [];
+  week.days.forEach(d => d.topics.forEach((t,i)=> ids.push(`${trackId}:${month.id}:${week.id}:${d.id}:${i}`)));
+  return ids;
+}
+function trackTopicIds(trackId){
+  const ids = [];
+  TRACKS[trackId].months.forEach(m => ids.push(...monthTopicIds(trackId, m)));
+  return ids;
+}
+function allTopicIds(){
+  const ids = [];
+  DEV_TRACK_ORDER.forEach(t => ids.push(...trackTopicIds(t)));
+  return ids;
+}
+const ALL_IDS = allTopicIds();
+
+function countFor(ids){
+  let done = 0;
+  ids.forEach(id => { if (checked[id]) done++; });
+  return { done, total: ids.length };
+}
+
+/* ---------------- Storage (browser localStorage — persists per browser) ---------------- */
+const STORAGE_KEY = 'placement-prep-progress';
+async function loadState(){
+  const stateEl = document.getElementById('saveState');
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw){
+      const parsed = JSON.parse(raw);
+      checked = parsed.checked || {};
+      collapsedWeeks = parsed.collapsedWeeks || {};
+      activeTrack = parsed.activeTrack || 'fullstack';
+      activeMonthByTrack = Object.assign({ fullstack:'m1', dsa:'p1', aptitude:'a1', placement:'pl1' }, parsed.activeMonthByTrack || {});
+    }
+    stateEl.textContent = 'progress saved in this browser';
+  }catch(e){
+    checked = {};
+    stateEl.textContent = 'progress saved in this browser';
+  }
+}
+let saveTimer = null;
+function saveState(){
+  const stateEl = document.getElementById('saveState');
+  stateEl.textContent = 'saving…';
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => {
+    try{
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ checked, collapsedWeeks, activeTrack, activeMonthByTrack }));
+      stateEl.textContent = 'progress saved in this browser';
+    }catch(e){
+      stateEl.textContent = 'could not save — storage may be full or blocked';
+    }
+  }, 250);
+}
+
+/* ---------------- Rendering ---------------- */
+function render(){
+  renderTabs();
+  renderNav();
+  renderPanel();
+  renderOverall();
+}
+
+function renderOverall(){
+  const { done, total } = countFor(ALL_IDS);
+  const pct = total ? Math.round((done/total)*100) : 0;
+  document.getElementById('overallPct').textContent = pct + '%';
+  document.getElementById('overallCount').textContent = `${done} / ${total} across dev + DSA`;
+}
+
+function renderTabs(){
+  const bar = document.getElementById('tabBar');
+  bar.innerHTML = '';
+  TRACK_ORDER.forEach(trackId => {
+    const track = TRACKS[trackId];
+    const { done, total } = countFor(trackTopicIds(trackId));
+    const pct = total ? Math.round((done/total)*100) : 0;
+    const btn = document.createElement('button');
+    btn.className = 'tab' + (activeTrack === trackId ? ' active' : '');
+    btn.innerHTML = `${track.label} <span class="tab-pct">${pct}%</span>`;
+    btn.addEventListener('click', () => { activeTrack = trackId; showExtras = false; saveState(); render(); });
+    bar.appendChild(btn);
+  });
+}
+
+function renderNav(){
+  const nav = document.getElementById('stackNav');
+  nav.innerHTML = '';
+  const track = TRACKS[activeTrack];
+
+  track.months.forEach(month => {
+    const ids = monthTopicIds(activeTrack, month);
+    const { done, total } = countFor(ids);
+    const pct = total ? Math.round((done/total)*100) : 0;
+
+    const item = document.createElement('div');
+    item.className = 'stack-item' + (activeMonthByTrack[activeTrack] === month.id && !showExtras ? ' active' : '');
+    item.innerHTML = `
+      <div class="m-name">${month.tag}${month.range ? ' · ' + month.range : ''}</div>
+      <div class="m-title">${month.title}</div>
+      <div class="fill-track"><div class="fill-bar" style="width:${pct}%"></div></div>
+      <span class="m-pct">${done}/${total} · ${pct}%</span>
+    `;
+    item.addEventListener('click', () => { activeMonthByTrack[activeTrack] = month.id; showExtras = false; saveState(); render(); });
+    nav.appendChild(item);
+  });
+
+  if (track.extras){
+    const extrasBtn = document.createElement('button');
+    extrasBtn.className = 'extras-btn' + (showExtras ? ' active' : '');
+    extrasBtn.textContent = '+ Job-ready checkpoints';
+    extrasBtn.addEventListener('click', () => { showExtras = true; render(); });
+    nav.appendChild(extrasBtn);
+  }
+}
+
+function renderPanel(){
+  const title = document.getElementById('panelTitle');
+  const sub = document.getElementById('panelSub');
+  const host = document.getElementById('weeksHost');
+  host.innerHTML = '';
+  const track = TRACKS[activeTrack];
+
+  if (showExtras && track.extras){
+    title.textContent = track.extras.title;
+    sub.textContent = '';
+    const note = document.createElement('div');
+    note.className = 'empty-note';
+    note.textContent = track.extras.note;
+    host.appendChild(note);
+
+    const day = document.createElement('div');
+    day.className = 'day';
+    day.style.marginTop = '12px';
+    track.extras.items.forEach((topic, i) => {
+      const id = `${activeTrack}:extras:_:_:${i}`;
+      day.appendChild(buildTopicRow(id, topic));
+    });
+    host.appendChild(day);
+    return;
+  }
+
+  const month = track.months.find(m => m.id === activeMonthByTrack[activeTrack]) || track.months[0];
+  activeMonthByTrack[activeTrack] = month.id;
+  const mIds = monthTopicIds(activeTrack, month);
+  const mCount = countFor(mIds);
+  title.textContent = month.title;
+  sub.textContent = `${month.range || ''} · ${mCount.done}/${mCount.total} done`;
+
+  month.weeks.forEach(week => {
+    const wIds = weekTopicIds(activeTrack, month, week);
+    const wCount = countFor(wIds);
+    const wPct = wCount.total ? Math.round((wCount.done/wCount.total)*100) : 0;
+    const collapseKey = `${activeTrack}:${month.id}:${week.id}`;
+    const isCollapsed = !!collapsedWeeks[collapseKey];
+
+    const weekEl = document.createElement('div');
+    weekEl.className = 'week' + (isCollapsed ? ' collapsed' : '');
+
+    const head = document.createElement('div');
+    head.className = 'week-head';
+    head.innerHTML = `
+      <div class="week-head-left">
+        <span class="week-caret">▾</span>
+        <span class="week-title">${week.title}</span>
+      </div>
+      <span class="week-count">${wCount.done}/${wCount.total}</span>
+    `;
+    head.addEventListener('click', () => {
+      collapsedWeeks[collapseKey] = !collapsedWeeks[collapseKey];
+      saveState();
+      render();
+    });
+    weekEl.appendChild(head);
+
+    const bar = document.createElement('div');
+    bar.className = 'week-bar-track';
+    bar.innerHTML = `<div class="week-bar" style="width:${wPct}%"></div>`;
+    weekEl.appendChild(bar);
+
+    const daysHost = document.createElement('div');
+    daysHost.className = 'days';
+    week.days.forEach(day => {
+      const dayEl = document.createElement('div');
+      dayEl.className = 'day';
+      const label = document.createElement('div');
+      label.className = 'day-label';
+      label.textContent = day.label;
+      dayEl.appendChild(label);
+      day.topics.forEach((topic, i) => {
+        const id = `${activeTrack}:${month.id}:${week.id}:${day.id}:${i}`;
+        dayEl.appendChild(buildTopicRow(id, topic));
+      });
+      daysHost.appendChild(dayEl);
+    });
+    weekEl.appendChild(daysHost);
+
+    host.appendChild(weekEl);
+  });
+}
+
+function buildTopicRow(id, text){
+  const row = document.createElement('label');
+  row.className = 'topic';
+  const input = document.createElement('input');
+  input.type = 'checkbox';
+  input.checked = !!checked[id];
+  input.addEventListener('change', () => {
+    checked[id] = input.checked;
+    saveState();
+    render();
+  });
+  const box = document.createElement('span');
+  box.className = 'box';
+  const span = document.createElement('span');
+  span.className = 'txt';
+  span.textContent = text;
+  row.appendChild(input);
+  row.appendChild(box);
+  row.appendChild(span);
+  return row;
+}
+
+document.getElementById('resetBtn').addEventListener('click', () => {
+  if (!confirm('Clear every checked-off concept across all four sections? This cannot be undone.')) return;
+  checked = {};
+  saveState();
+  render();
+});
+
+(async function init(){
+  await loadState();
+  render();
+})();
+</script>
+</body>
+</html>
